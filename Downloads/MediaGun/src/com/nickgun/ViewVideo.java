@@ -79,6 +79,7 @@ public class ViewVideo extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				mVideoView.pause();
 				String str = noteDislay.getText().toString();
 				Intent myIntent = new Intent();
 				Bundle extras = new Bundle();
@@ -88,6 +89,7 @@ public class ViewVideo extends Activity {
 				myIntent.putExtras(extras);
 				myIntent.setClass(myContext, ShowNote.class);
 				startActivity(myIntent);
+
 			}
 		});
 	}
@@ -142,18 +144,19 @@ public class ViewVideo extends Activity {
 			for (int i = 0; i < arrayList.size(); i = i + 2) {
 				time.add(Integer.valueOf(arrayList.get(i)));
 			}
-			int count = 0;
+			indexNote = time.size() + 1;
 			while (true) {
 				int currentTime = mVideoView.getCurrentPosition();
-				if (currentTime > time.get(count)) {
-					Log.e("LOG", "Current time:" + currentTime
-							+ "\nRead time : " + time.get(count));
-					indexNote = count;
-					my_handler.post(doUpdateGUI);
-					count++;
-				}
-				if (count == time.size())
-					break;
+				for (int count = time.size(); count > 0; count--)
+					if (currentTime > time.get(count - 1)) {
+						if (indexNote != (count - 1)) {
+							Log.e("LOG", "Current time:" + currentTime
+									+ "\nRead time : " + time.get(count - 1));
+							indexNote = count - 1;
+							my_handler.post(doUpdateGUI);
+						}
+						count = 0;
+					}
 			}
 		}
 	};
@@ -168,6 +171,7 @@ public class ViewVideo extends Activity {
 
 	private void updateGUI(String str) {
 		// execute dislay note in video
+		showNote.setEnabled(true);
 		String note = arrayList.get(indexNote * 2 + 1);
 		Log.e("LOG", "Dislay note : " + note);
 		noteDislay.setText(note);

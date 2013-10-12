@@ -24,10 +24,10 @@ public class ShowNote extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		String strNote = extras.getString("NOTE");
-		String strNoteTime = extras.getString("NOTE_TIME");
+		int NoteTime = Integer.valueOf(extras.getString("NOTE_TIME"));
 
 		// add du lieu vao dialog
-		tvNoteTime.append(strNoteTime);
+		tvNoteTime.append("  " + NoteTime / 1000 + "." + NoteTime % 1000 + "s");
 		tvNote.setText(strNote);
 
 		btnNote.setOnClickListener(new OnClickListener() {
