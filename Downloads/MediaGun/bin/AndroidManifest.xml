@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.nickgun.CameraRecorder" >
+        <activity android:name="com.camera_recorder.CameraRecorder" >
         </activity>
         <activity
             android:name="com.nickgun.SettingsDialog"
@@ -28,15 +28,15 @@
             android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
-            android:name="com.nickgun.AddNote"
+            android:name="com.camera_recorder.AddNote"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
-            android:name="com.nickgun.ViewVideo"
+            android:name="com.view_video.ViewVideo"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="com.nickgun.ShowNote"
+            android:name="com.view_video.ShowNote"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
     </application>

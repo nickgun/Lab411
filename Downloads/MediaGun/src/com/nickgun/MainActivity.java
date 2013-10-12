@@ -1,5 +1,8 @@
 package com.nickgun;
 
+import com.camera_recorder.CameraRecorder;
+import com.view_video.ViewVideo;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
