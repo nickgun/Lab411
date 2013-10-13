@@ -13,10 +13,12 @@ import com.nickgun.R.layout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -24,6 +26,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MediaController;
+import android.widget.SlidingDrawer;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 public class ViewVideo extends Activity {
@@ -34,12 +39,12 @@ public class ViewVideo extends Activity {
 																	// data note
 	private int indexNote;
 
-	private Button cleanNote;
-	private Button showNote;
-	private EditText noteDislay;
+	private TextView noteDislay;
 
 	private String myVideoFilePath;
 	private Context myContext;
+
+	private boolean isNoteDislay = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +56,7 @@ public class ViewVideo extends Activity {
 		setContentView(R.layout.videoview);
 
 		mVideoView = (VideoView) this.findViewById(R.id.videoView);
-		cleanNote = (Button) findViewById(R.id.cleanNoteBtn);
-		showNote = (Button) findViewById(R.id.showNoteBtn);
-		noteDislay = (EditText) findViewById(R.id.noteDislay);
+		noteDislay = (TextView) findViewById(R.id.noteDislay);
 
 		String myStorage = Environment.getExternalStorageDirectory().toString();
 		myVideoFilePath = myStorage + "/NickGun/CameraGun/";
@@ -72,14 +75,7 @@ public class ViewVideo extends Activity {
 		playRecording();
 		readNote();
 
-		cleanNote.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				noteDislay.setText("");
-			}
-		});
-
-		showNote.setOnClickListener(new OnClickListener() {
+		noteDislay.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -118,6 +114,14 @@ public class ViewVideo extends Activity {
 		mVideoView.setMediaController(mc);
 		mVideoView.setVideoPath(mInputFileName);
 		mVideoView.start();
+		mc.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				int i = v.getId();
+				Log.e("LOG", "touch video");
+				return false;
+			}
+		});
 	}
 
 	private void readNote() {
@@ -149,35 +153,58 @@ public class ViewVideo extends Activity {
 				time.add(Integer.valueOf(arrayList.get(i)));
 			}
 			indexNote = time.size() + 1;
+
+			int countToClearNote = 0;
 			while (true) {
 				int currentTime = mVideoView.getCurrentPosition();
+
 				for (int count = time.size(); count > 0; count--)
 					if (currentTime > time.get(count - 1)) {
 						if (indexNote != (count - 1)) {
 							Log.e("LOG", "Current time:" + currentTime
 									+ "\nRead time : " + time.get(count - 1));
 							indexNote = count - 1;
+							countToClearNote = 1;
 							my_handler.post(doUpdateGUI);
 						}
 						count = 0;
 					}
+
+				if (countToClearNote > 0)
+					countToClearNote++;
+				if (countToClearNote == 20) {
+					countToClearNote = 0;
+					my_handler.post(clearNote);
+				}
+
+				if (isNoteDislay && (currentTime < time.get(0)))
+					my_handler.post(clearNote);
+
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+		}
+	};
+
+	private Runnable clearNote = new Runnable() {
+		@Override
+		public void run() {
+			noteDislay.setText("");
+			isNoteDislay = false;
 		}
 	};
 
 	private Runnable doUpdateGUI = new Runnable() {
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-			updateGUI("");
+			isNoteDislay = true;
+			String note = arrayList.get(indexNote * 2 + 1);
+			Log.e("LOG", "Dislay note : " + note);
+			noteDislay.setText(note);
 		}
 	};
-
-	private void updateGUI(String str) {
-		// execute dislay note in video
-		showNote.setEnabled(true);
-		String note = arrayList.get(indexNote * 2 + 1);
-		Log.e("LOG", "Dislay note : " + note);
-		noteDislay.setText(note);
-	}
 }
