@@ -1,5 +1,5 @@
 
-
+static double *read_data_from_file(char *pFilePath, int Sample);
 double *daub4_transform ( int n, double x[] );
 double *daub4_transform_inverse ( int n, double y[] );
 double *r8vec_copy_new ( int n, double a1[] );

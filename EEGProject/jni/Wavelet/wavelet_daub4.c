@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include "wavelet_daub4.h"
+#include "../eegdata_conf.h"
+#include <jni.h>
+
+//#include "../../../../../../Downloads/swt-0.1.0rc4/test/utility_test.sce"
 
 double c[4] = {
      0.4829629131445341, 
@@ -10,6 +15,182 @@ double c[4] = {
      0.2241438680420133, 
     -0.1294095225512603 };
 
+static double *read_data_from_file(char *pFilePath, int Sample)
+  {
+    int i; 
+    double *u;
+    FILE *fl;
+    char Path[512];
+    
+    strcpy(Path, pFilePath);
+   
+    fl = fopen(Path, "r");
+    u = malloc ( Sample * sizeof ( double ) );
+    
+    for (i=0; i<Sample; i++) {
+	fscanf(fl, "%lf ", &(u[i]));	
+    }
+    fclose(fl);
+    return u;	
+  }
+
+void WaveletTransform(char *pFilePath, int Sample){
+   double *Data;
+   double *Data_WT;
+   FILE *OutputFile;
+   int i;
+   char path[512];
+
+   Data = read_data_from_file(pFilePath, Sample);
+   Data_WT = daub4_transform(Sample, Data);
+	
+   strcpy(path, pFilePath);
+   strcat(path, "_DWT");
+	
+   OutputFile = fopen(path, "wb");
+   for(i=0; i<Sample; i++)
+      fprintf(OutputFile, "%f\n", Data_WT[i]);  
+   fclose(OutputFile);  
+}
+
+void WaveletTransformInverse(char *pFilePath, int Sample, int Lever){
+   double *Data;
+   double *Data_WT;
+   double *Data_IWT;
+   FILE *OutputFile;
+   int i;
+   char path[512];
+   int a, b;
+
+   Data = read_data_from_file(pFilePath, Sample);
+   Data_WT = daub4_transform(Sample, Data);
+	
+   a = Sample;
+   for(i; i>=0; i--)
+      a = a / 2;
+   b= a*2;
+	
+   for(i=0; i<a; i++)
+      Data_WT[i] = 0;
+   for(i=b; i < Sample; i++)
+      Data_WT[i] = 0;
+
+   Data_IWT = daub4_transform_inverse(Sample, Data_WT);
+	
+   strcpy(path, pFilePath);
+   strcat(path, "_IDWT");
+   OutputFile = fopen(path, "wb");
+   for(i = 0; i<Sample; i++)
+      fprintf(OutputFile, "%f\n", Data_IWT[i]);
+   fclose(OutputFile);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_eegsdk_SdkMain_WaveletTransform(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample){
+   const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
+   // use your string
+   WaveletTransform(nativeString, Sample);
+   (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
+  return 1;
+}
+JNIEXPORT jint JNICALL
+Java_com_eegsdk_SdkMain_WaveletTransformInverse(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample, jint Lever){
+   const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
+   // use your string
+   WaveletTransformInverse(nativeString, Sample, Lever);
+   (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
+  return 1;
+}
+
+/*
+/home/nick_gun/Desktop/Lab-2013/SAMSUNG_2013_2014/Code/Code26.12.2013/Data/Eyeblink2/Eyeblink2.edf_18000_19024_Data_Of_Channel_13.txt
+*/
+void main(){
+  char pFilePath[512];
+  int Sample;
+  int i;
+  char chr[10];
+  double *Data;
+  double *Data_WT;
+  double *Data_IWT;
+  FILE *OutputFile;
+  int a, b;
+  
+  while(1){
+    puts("\n\n\n#################### WAVELET ####################");
+    printf("Type Path File:");
+    scanf("%s", pFilePath);
+    printf("Sample:");
+    scanf("%i", &Sample);
+ 
+    Data = read_data_from_file(pFilePath, Sample);
+    
+    puts("#####Menu:");
+    puts("1. Wavelet Transform.");
+    puts("2. Wavelet Transform Inverse.");
+    puts("3. Restart.");
+    puts("4. Exit.");
+    printf("Choose Menu: ");
+    scanf("%i",&i);
+    
+    switch(i){
+      case 1:{
+	Data_WT = daub4_transform(Sample, Data);
+	
+	strcat(pFilePath, "_DWT");
+	
+	OutputFile = fopen(pFilePath, "wb");
+	for(i=0; i<Sample; i++)
+	  fprintf(OutputFile, "%f\n", Data_WT[i]);  
+	fclose(OutputFile);  
+	
+	puts("Complete Transform, File:");
+	puts(pFilePath);
+      }break;
+      case 2:{
+	Data_WT = daub4_transform(Sample, Data);
+	
+	printf("Choose Wavelet Lever: ");
+	scanf("%i",&i);
+	strcat(pFilePath, "_IDWT_Lever");
+	sprintf(chr, "%d", i);
+	strcat(pFilePath, chr);
+	
+	a = Sample;
+	for(i; i>=0; i--)
+	  a = a / 2;
+	b= a*2;
+	
+	for(i=0; i<a; i++)
+	  Data_WT[i] = 0;
+	for(i=b; i < Sample; i++)
+	  Data_WT[i] = 0;
+	
+	printf("\nTransfrom from sample  %i to %i , Total %i Sample\n", a,b, Sample);
+	
+	Data_IWT = daub4_transform_inverse(Sample, Data_WT);
+	
+	OutputFile = fopen(pFilePath, "wb");
+	for(i = 0; i<Sample; i++)
+	  fprintf(OutputFile, "%f\n", Data_IWT[i]);
+	fclose(OutputFile);
+	
+	puts("Complete Transform, File:");
+	puts(pFilePath);
+      }break;
+      case 3:{
+	
+      }break;
+      case 4:{
+	puts("#################### BYE BYE ####################");
+	return;
+      }break;
+      default:
+	break;
+    }
+  }
+}
+    
 double *daub4_transform ( int n, double x[] )
 /******************************************************************************/
 /*
@@ -315,6 +496,4 @@ int i4_wrap ( int ival, int ilo, int ihi )
   {
     value = jlo + i4_modp ( ival - jlo, wide );
   }
-
-  return value;
 }
