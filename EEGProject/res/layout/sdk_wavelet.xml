@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="Click here for choose Data file" />
+        android:hint="Click here for choose Data file" />
 
     <EditText
         android:id="@+id/etSample_Wl"

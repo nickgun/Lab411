@@ -1,0 +1,16 @@
+
+
+static double *read_data_from_file(char *pFilePath, int Sample);
+void detectGazeEye(char *pF8Path, char *F7Path, int Sample);
+
+int State;
+static int Threshold = 50;
+
+static int  GazeCenter = 100;
+static int GazeRight = 101;
+static int GazeLeft = 102;
+static int EyeBlink = 103;
+
+int *pGazeRight;
+int *pGazeLeft;
+int *pEyeBlink;

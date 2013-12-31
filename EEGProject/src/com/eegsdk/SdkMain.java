@@ -1,5 +1,10 @@
 package com.eegsdk;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Scanner;
+
 import com.eegproject.R;
 
 import android.app.Activity;
@@ -16,9 +21,11 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 public class SdkMain extends Activity {
-	private TabHost tabhost;
+	private TabHost th_sdk_main, th_sdk_ica;
 	private static final int REQUEST_BROWN_EDF_FILE = 100;
 	private static final int REQUEST_BROWN_DATA_FILE_WL = 101;
+	private static final int REQUEST_BROWN_F8_FILE_DE = 102;
+	private static final int REQUEST_BROWN_F7_FILE_DE = 103;
 	private TextView tvStatus;
 
 	/**
@@ -198,6 +205,121 @@ public class SdkMain extends Activity {
 		});
 	}
 
+	/**
+	 * Detect GazeEye, EyeBlink
+	 */
+	TextView tvBrownFileF8_De, tvBrownFileF7_De;
+	EditText etSample_De;
+	Button btnDetect;
+
+	void readFileDetect(String str) {
+		String Line[] = new String[300];
+		int i = 0;
+		String a;
+		String b;
+		File fl = new File(str);
+		FileInputStream ips = null;
+		Scanner input = null;
+		if (fl.exists()) {
+			try {
+				// tao luong noi den tap tin
+				ips = new FileInputStream(fl);
+				// dung phuong tien Scanner de doc
+				input = new Scanner(ips);
+				{
+					while (input.hasNextLine()) {
+						Line[i] = input.nextLine();
+						i++;
+					}
+				}
+				ips = null;
+				input = null;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			int ieb = Integer.parseInt(Line[0]);
+			int ir = Integer.parseInt(Line[1]);
+			int il = Integer.parseInt(Line[2]);
+			tvStatus.append("\nDetect Complete");
+			tvStatus.append("\n      #EyeBlink: " + ieb);
+			for (i = 0; i < ieb; i++) {
+				int j = i + 3;
+				tvStatus.append("\n            Sample " + Line[j]);
+			}
+			tvStatus.append("\n      #GazeRight:" + (ir / 2));
+			for (i = 0; i < ir; i += 2) {
+				int j = i + 3 + ieb;
+				tvStatus.append("\n            Sample " + Line[j] + " to "
+						+ Line[j + 1]);
+			}
+			tvStatus.append("\n      #GazeLeft:" + il / 2);
+			for (i = 0; i < il; i += 2) {
+				int j = i + 3 + ieb + ir;
+				tvStatus.append("\n            Sample " + Line[j] + " to "
+						+ Line[j + 1]);
+			}
+			tvStatus.append("\n");
+		}
+
+		try {
+			Process p = Runtime.getRuntime().exec("rm " + str);
+			p.waitFor();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	void detect_eye_init() {
+		tvBrownFileF7_De = (TextView) findViewById(R.id.tvBrownFileF7_De);
+		tvBrownFileF8_De = (TextView) findViewById(R.id.tvBrownFileF8_De);
+		etSample_De = (EditText) findViewById(R.id.etSample_De);
+		btnDetect = (Button) findViewById(R.id.btnDetect_de);
+	}
+
+	void detect_eye_even() {
+		tvBrownFileF7_De.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent myIntent = new Intent(Intent.ACTION_GET_CONTENT);
+				myIntent.setType("file/*");
+				startActivityForResult(myIntent, REQUEST_BROWN_F7_FILE_DE);
+			}
+		});
+
+		tvBrownFileF8_De.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent myIntent = new Intent(Intent.ACTION_GET_CONTENT);
+				myIntent.setType("file/*");
+				startActivityForResult(myIntent, REQUEST_BROWN_F8_FILE_DE);
+			}
+		});
+		btnDetect.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String strF7Path = tvBrownFileF7_De.getText().toString();
+				String strF8Path = tvBrownFileF8_De.getText().toString();
+				String strSample_De = etSample_De.getText().toString();
+				if ((strF7Path.trim().length() > 0)
+						&& (strF8Path.trim().length() > 0)) {
+					if (strSample_De.trim().length() > 0) {
+						detectEye(strF8Path, strF7Path,
+								Integer.parseInt(strSample_De));
+						readFileDetect(strF8Path + "_DetectEye");
+					} else
+						tvStatus.append("\nEnter Sample!\n");
+				} else
+					tvStatus.append("\nChoose Data File!");
+
+				tvStatus.scrollTo(0,
+						tvStatus.getLineCount() * tvStatus.getLineHeight()
+								+ tvStatus.getTop() - tvStatus.getBottom());
+			}
+		});
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -207,8 +329,10 @@ public class SdkMain extends Activity {
 		tvStatus = (TextView) findViewById(R.id.tvStatus);
 		tvStatus.setMovementMethod(new ScrollingMovementMethod());
 
-		tabhost = (TabHost) findViewById(R.id.tabhost);
-		tabhost.setup();
+		th_sdk_main = (TabHost) findViewById(R.id.tabhost);
+		th_sdk_main.setup();
+		th_sdk_ica = (TabHost) findViewById(R.id.tabhost_sdk_ica);
+		th_sdk_ica.setup();
 		tab_init();
 
 		readedf_init();
@@ -216,17 +340,27 @@ public class SdkMain extends Activity {
 
 		wavelet_init();
 		wavelet_even();
+
+		detect_eye_init();
+		detect_eye_even();
 	}
 
 	private void tab_init() {
-		tabhost.addTab(tabhost.newTabSpec("first").setIndicator("CONFIG")
-				.setContent(R.id.tab1));
-		tabhost.addTab(tabhost.newTabSpec("second").setIndicator("READEDF")
-				.setContent(R.id.tab2));
-		tabhost.addTab(tabhost.newTabSpec("third").setIndicator("WAVELET")
-				.setContent(R.id.tab3));
-		tabhost.addTab(tabhost.newTabSpec("fourth").setIndicator("ICA")
+		th_sdk_main.addTab(th_sdk_main.newTabSpec("first")
+				.setIndicator("CONFIG").setContent(R.id.tab1));
+		th_sdk_main.addTab(th_sdk_main.newTabSpec("second")
+				.setIndicator("READEDF").setContent(R.id.tab2));
+		th_sdk_main.addTab(th_sdk_main.newTabSpec("third")
+				.setIndicator("WAVELET").setContent(R.id.tab3));
+		th_sdk_main.addTab(th_sdk_main.newTabSpec("fourth").setIndicator("ICA")
 				.setContent(R.id.tab4));
+		th_sdk_main.addTab(th_sdk_main.newTabSpec("fiveth")
+				.setIndicator("DETECT GAZEEYE/EYEBLINK").setContent(R.id.tab5));
+
+		th_sdk_ica.addTab(th_sdk_ica.newTabSpec("first")
+				.setIndicator("ICA PROS").setContent(R.id.tabICApros));
+		th_sdk_ica.addTab(th_sdk_ica.newTabSpec("second")
+				.setIndicator("ICA INVERSE").setContent(R.id.tabICAinverse));
 	}
 
 	@Override
@@ -245,6 +379,16 @@ public class SdkMain extends Activity {
 				tvBrownFile_Wl.setText(strPath);
 			}
 				break;
+			case REQUEST_BROWN_F7_FILE_DE: {
+				String strPath = intent.getData().getPath();
+				tvBrownFileF7_De.setText(strPath);
+			}
+				break;
+			case REQUEST_BROWN_F8_FILE_DE: {
+				String strPath = intent.getData().getPath();
+				tvBrownFileF8_De.setText(strPath);
+			}
+				break;
 			default:
 				break;
 			}
@@ -259,10 +403,16 @@ public class SdkMain extends Activity {
 	public native int WaveletTransformInverse(String javaString, int Sample,
 			int Lever);
 
+	public native int detectEye(String javaString1, String javaString2,
+			int Sample);
+
 	static {
 		System.loadLibrary("ReadData");
 	}
 	static {
 		System.loadLibrary("Wavelet");
+	}
+	static {
+		System.loadLibrary("DetectEye");
 	}
 }
