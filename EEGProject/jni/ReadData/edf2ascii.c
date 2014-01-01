@@ -83,7 +83,7 @@ int readDataOfChannel(char *pFilePath, int Start_Sample, int Stop_Sample, int Ch
 }
 
 JNIEXPORT jint JNICALL
-Java_com_eegsdk_SdkMain_ReadData(JNIEnv *env, jobject thisObj, jstring javaString, jint Type, jint Start, jint Stop, jint Channel){
+Java_com_eegsdk_ReadEdf_ReadData(JNIEnv *env, jobject thisObj, jstring javaString, jint Type, jint Start, jint Stop, jint Channel){
    const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
    // use your string
    switch(Type){

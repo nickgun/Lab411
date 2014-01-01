@@ -79,14 +79,14 @@ void WaveletTransformInverse(char *pFilePath, int Sample, int Lever){
 	
    strcpy(path, pFilePath);
    strcat(path, "_IDWT");
-   OutputFile = fopen(pFilePath, "wb");
+   OutputFile = fopen(path, "wb");
    for(i = 0; i<Sample; i++)
       fprintf(OutputFile, "%f\n", Data_IWT[i]);
    fclose(OutputFile);
 }
 
 JNIEXPORT jint JNICALL
-Java_com_eegsdk_SdkMain_WaveletTransform(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample){
+Java_com_eegsdk_Wavelet_WaveletTransform(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample){
    const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
    // use your string
    WaveletTransform(nativeString, Sample);

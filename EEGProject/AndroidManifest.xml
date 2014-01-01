@@ -27,6 +27,16 @@
         </activity>
         <activity android:name="com.eegsdk.SdkMain" >
         </activity>
+        <activity android:name="com.eegsdk.ReadEdf" >
+        </activity>
+        <activity android:name="com.eegsdk.Config" >
+        </activity>
+        <activity android:name="com.eegsdk.Wavelet" >
+        </activity>
+        <activity android:name="com.eegsdk.DetectEye" >
+        </activity>
+        <activity android:name="com.eegsdk.ICA" >
+        </activity>
     </application>
 
 </manifest>

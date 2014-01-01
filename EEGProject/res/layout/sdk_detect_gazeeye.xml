@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:gravity="center"
         android:hint="Choose file Data F8" />
 
     <TextView
@@ -18,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:gravity="center"
         android:hint="Choose file Data F7" />
 
     <EditText
@@ -26,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
+        android:gravity="center"
         android:hint="Enter Sample"
         android:inputType="numberDecimal" />
 
@@ -34,6 +37,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Button" />
+        android:text="Start Detect" />
 
 </LinearLayout>

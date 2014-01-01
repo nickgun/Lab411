@@ -52,51 +52,30 @@
                         android:id="@+id/tab1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tab1" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/tab2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
-
-                        <include
-                            android:id="@+id/id1"
-                            layout="@layout/sdk_readedf" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/tab3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
-
-                        <include
-                            android:id="@+id/id1"
-                            layout="@layout/sdk_wavelet" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/tab4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
-
-                        <include
-                            android:id="@+id/id1"
-                            layout="@layout/sdk_ica" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/tab5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
-
-                        <include
-                            android:id="@+id/id1"
-                            layout="@layout/sdk_detect_gazeeye" />
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>
