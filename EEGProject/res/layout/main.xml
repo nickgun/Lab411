@@ -15,6 +15,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="SDK" />
+        android:text="NickGun SDK" />
 
 </RelativeLayout>

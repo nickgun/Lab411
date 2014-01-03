@@ -51,12 +51,10 @@ void detectGazeEye(char *pF8Path, char *pF7Path, int Sample){
       break;
     
     DeltaF8 = DataF8[j] - DataF8[i];
-    
+    DeltaF7 = DataF7[j] - DataF7[i];
     
     if(DeltaF8>Threshold){	//do thi dot bien theo huong len
       if(DeltaF7>Threshold){	//detect eyeblink
-	pEyeBlink[ieb]=i;
-	ieb++;
       }else{			//detect gaze eye
 	if(State==GazeCenter){	
 	  printf("\nDectect Start GazeRight: %i Sample", i);

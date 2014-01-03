@@ -61,14 +61,13 @@
                 <requestFocus android:layout_width="wrap_content" />
             </EditText>
 
-            <EditText
-                android:id="@+id/etChannel"
+            <Spinner
+                android:id="@+id/spnChanne_Re"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
-                android:ems="10"
-                android:hint="Channel"
-                android:inputType="numberDecimal" />
+                android:entries="@array/arrNameChannel"
+                android:prompt="@string/strPromptChannel" />
         </LinearLayout>
 
         <RadioGroup

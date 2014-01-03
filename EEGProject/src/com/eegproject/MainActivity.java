@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	Button btnSdkMain;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

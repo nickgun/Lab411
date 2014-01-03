@@ -51,12 +51,10 @@ void detectGazeEye(char *pF8Path, char *pF7Path, int Sample){
       break;
     
     DeltaF8 = DataF8[j] - DataF8[i];
-    
+    DeltaF7 = DataF7[j] - DataF7[i];
     
     if(DeltaF8>Threshold){	//do thi dot bien theo huong len
       if(DeltaF7>Threshold){	//detect eyeblink
-	pEyeBlink[ieb]=i;
-	ieb++;
       }else{			//detect gaze eye
 	if(State==GazeCenter){	
 	  printf("\nDectect Start GazeRight: %i Sample", i);
@@ -90,9 +88,7 @@ void detectGazeEye(char *pF8Path, char *pF7Path, int Sample){
   strcpy(pFilePath, pF8Path);
   strcat(pFilePath, "_DetectEye");
   OutputFile = fopen(pFilePath, "wb");
-  fprintf(OutputFile, "%i\n%i\n%i\n", ieb, ir, il);
-  for(i=0; i<ieb; i++)
-    fprintf(OutputFile, "%i\n", pEyeBlink[ieb]);
+  fprintf(OutputFile, "%i\n%i\n", ir, il);
   for(i=0; i<ir; i++)
     fprintf(OutputFile, "%i\n", pGazeRight[i]);
   for(i=0; i<il; i++)

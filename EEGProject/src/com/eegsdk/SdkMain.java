@@ -21,7 +21,7 @@ import com.eegproject.R;
 public class SdkMain extends ActivityGroup {
 	private TabHost th_sdk_main, th_sdk_ica;
 	public static TextView tvStatus;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class SdkMain extends ActivityGroup {
 
 		tvStatus = (TextView) findViewById(R.id.tvStatus);
 		tvStatus.setMovementMethod(new ScrollingMovementMethod());
-
+		
 		th_sdk_main = (TabHost) findViewById(R.id.tabhost);
 		th_sdk_main.setup(this.getLocalActivityManager());
 		tab_init();
@@ -49,7 +49,7 @@ public class SdkMain extends ActivityGroup {
 		th_sdk_main.addTab(th_sdk_main.newTabSpec("fourth").setIndicator("ICA")
 				.setContent(new Intent(this, ICA.class)));
 		th_sdk_main.addTab(th_sdk_main.newTabSpec("fiveth")
-				.setIndicator("DETECT GAZEEYE/EYEBLINK")
+				.setIndicator("DETECT GAZEEYE")
 				.setContent(new Intent(this, DetectEye.class)));
 	}
 }

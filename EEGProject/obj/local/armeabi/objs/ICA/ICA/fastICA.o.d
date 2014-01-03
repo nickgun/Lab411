@@ -36,8 +36,7 @@
  /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/sys/time.h \
  /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/linux/time.h \
  /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/asm/siginfo.h \
- /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h \
- /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/jni.h
+ /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h
 
 /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/stdio.h:
 
@@ -112,5 +111,3 @@
 /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/asm/siginfo.h:
 
 /home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/asm-generic/siginfo.h:
-
-/home/nick_gun/Desktop/software/android-ndk-r5b/platforms/android-3/arch-arm/usr/include/jni.h:

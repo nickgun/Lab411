@@ -4,12 +4,14 @@ import com.eegproject.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +34,8 @@ public class ReadEdf extends Activity {
 	Button btnReadEdf;
 	TextView tvBrownFile_ReadEdf;
 	RadioGroup rbGroup;
-	EditText etStart, etEnd, etChannel;
+	EditText etStart, etEnd;
+	Spinner spnChannel_Re;
 
 	// khai bao cac Button, EditText, ... trong giao dien Tab Read Edf
 	private void readedf_init() {
@@ -46,7 +49,7 @@ public class ReadEdf extends Activity {
 		btnReadEdf = (Button) findViewById(R.id.btnReadEdf);
 		etStart = (EditText) findViewById(R.id.etStartSample);
 		etEnd = (EditText) findViewById(R.id.etEndSample);
-		etChannel = (EditText) findViewById(R.id.etChannel);
+		spnChannel_Re = (Spinner) findViewById(R.id.spnChanne_Re);
 	}
 
 	// xay dung cac su kien click button trong giao dien Tab Read Edf
@@ -64,6 +67,9 @@ public class ReadEdf extends Activity {
 			@Override
 			public void onClick(View v) {
 				int CheckRbGroup = rbGroup.getCheckedRadioButtonId();
+				int ChanNum = spnChannel_Re.getSelectedItemPosition();
+				Log.e("TAG", "Chan"+ ChanNum);
+				String strChannel = spnChannel_Re.getSelectedItem().toString();
 				if (tvBrownFile_ReadEdf.getText().toString().trim().length() > 0)
 					switch (CheckRbGroup) {
 					case R.id.rbAllDataOfAllChannel: {
@@ -73,22 +79,19 @@ public class ReadEdf extends Activity {
 						SdkMain.tvStatus
 								.append("\n- Read All Data Of All Channel, Output File:");
 						SdkMain.tvStatus.append("\n"
-								+ tvBrownFile_ReadEdf.getText() + "_AllDataAllChan\n");
+								+ tvBrownFile_ReadEdf.getText()
+								+ "_AllDataAllChan\n");
 					}
 						break;
 					case R.id.rbAllDataOfChannel: {
 						System.out.print("\nAllDataOfChannel");
-						String strChannel = etChannel.getText().toString();
-						if (strChannel.trim().length() > 0) {
-							ReadData(tvBrownFile_ReadEdf.getText().toString(),
-									2, 0, 0, Integer.parseInt(strChannel));
-							SdkMain.tvStatus
-									.append("\n- Read All Data Of Channel, Output File:");
-							SdkMain.tvStatus.append("\n"
-									+ tvBrownFile_ReadEdf.getText()
-									+ "_AllData_Channel" + strChannel + "\n");
-						} else
-							SdkMain.tvStatus.append("\nEnter Data!\n");
+						ReadData(tvBrownFile_ReadEdf.getText().toString(), 2,
+								0, 0, ChanNum);
+						SdkMain.tvStatus
+								.append("\n- Read All Data Of Channel, Output File:");
+						SdkMain.tvStatus.append("\n"
+								+ tvBrownFile_ReadEdf.getText()
+								+ "_AllData_Channel" + strChannel + "\n");
 					}
 						break;
 					case R.id.rbDataOfAllChannel: {
@@ -112,16 +115,13 @@ public class ReadEdf extends Activity {
 						break;
 					case R.id.rbDataOfChannel: {
 						System.out.print("\nDataOfChannel");
-						String strChannel = etChannel.getText().toString();
 						String strStart = etStart.getText().toString();
 						String strEnd = etEnd.getText().toString();
-						if ((strChannel.trim().length() > 0)
-								&& (strStart.trim().length() > 0)
+						if ((strStart.trim().length() > 0)
 								&& (strEnd.trim().length() > 0)) {
 							ReadData(tvBrownFile_ReadEdf.getText().toString(),
 									4, Integer.parseInt(strStart),
-									Integer.parseInt(strEnd),
-									Integer.parseInt(strChannel));
+									Integer.parseInt(strEnd), ChanNum);
 							SdkMain.tvStatus
 									.append("\n- Read Data Of Channel, Output File:");
 							SdkMain.tvStatus.append("\n"

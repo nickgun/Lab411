@@ -57,24 +57,18 @@ public class DetectEye extends Activity {
 				e.printStackTrace();
 			}
 
-			int ieb = Integer.parseInt(Line[0]);
-			int ir = Integer.parseInt(Line[1]);
-			int il = Integer.parseInt(Line[2]);
+			int ir = Integer.parseInt(Line[0]);
+			int il = Integer.parseInt(Line[1]);
 			SdkMain.tvStatus.append("\nDetect Complete");
-			SdkMain.tvStatus.append("\n      #EyeBlink:  " + ieb);
-			for (i = 0; i < ieb; i++) {
-				int j = i + 3;
-				SdkMain.tvStatus.append("\n            Sample " + Line[j]);
-			}
-			SdkMain.tvStatus.append("\n      #GazeRight:  " + (ir / 2));
+			SdkMain.tvStatus.append("\n      #GazeRight:  " + ir / 2);
 			for (i = 0; i < ir; i += 2) {
-				int j = i + 3 + ieb;
+				int j = i + 2;
 				SdkMain.tvStatus.append("\n            Sample " + Line[j]
 						+ " to " + Line[j + 1]);
 			}
-			SdkMain.tvStatus.append("\n      #GazeLeft:  " + il / 2);
+			SdkMain.tvStatus.append("\n      #GazeLeft:  " + (il / 2));
 			for (i = 0; i < il; i += 2) {
-				int j = i + 3 + ieb + ir;
+				int j = i + 2 + ir;
 				SdkMain.tvStatus.append("\n            Sample " + Line[j]
 						+ " to " + Line[j + 1]);
 			}
