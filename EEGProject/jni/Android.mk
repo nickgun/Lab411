@@ -15,3 +15,8 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := DetectEye
 LOCAL_SRC_FILES := ./DetectGazeEye/DetectGazeEye.c
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE    := ICA
+LOCAL_SRC_FILES := ./ICA/fastICA.c ./ICA/svdcmp.c matrix.c
+include $(BUILD_SHARED_LIBRARY)

@@ -6,6 +6,7 @@
 #include "svdcmp.h"
 #include "../eegdata_conf.h"
 #include <time.h>
+#//include <jni.h>
 
 
 /*
@@ -54,6 +55,94 @@ static double **mat_read(FILE *fp, int *rows, int *cols)
     return M;	
   }
 
+void icaTransform(char *pFilePath, int rows, int cols,int comp){
+  double **X, **K, **W, **A, **S, **_S;
+  FILE *Fl;
+  FILE * OutputFile;
+  int i, j;
+  
+  // Matrix creation
+  W = mat_create(comp, comp);
+  A = mat_create(comp, comp); 
+  K = mat_create(cols, comp);
+  S = mat_create(rows, comp);
+  
+  Fl = fopen(pFilePath, "r");
+  X = mat_read(Fl, &rows, &cols);
+  fclose(Fl);
+  
+  fastICA(X, rows, cols, comp, K, W, A, S);
+	
+  strcat(pFilePath, "_ICA");
+  OutputFile = fopen(pFilePath, "wb");
+  for(i=0; i<rows; i++){
+    for(j=0; j<comp; j++){
+      fprintf(OutputFile, "%f ", S[i][j]);
+    }
+    fprintf(OutputFile, "\n");
+  }
+  fclose(OutputFile);
+}
+
+void icaTransformInverse(char *pFilePath, int rows, int cols,int comp, int comp_rm){
+  double **X, **K, **W, **A, **S, **_S;
+  double *Total;
+  FILE *Fl;
+  FILE * OutputFile;
+  int i, j, k;
+  char chr[10];
+  
+  // Matrix creation
+  W = mat_create(comp, comp);
+  A = mat_create(comp, comp); 
+  K = mat_create(cols, comp);
+  S = mat_create(rows, comp);
+  _S = mat_create(rows, comp);
+  
+  Fl = fopen(pFilePath, "r");
+  X = mat_read(Fl, &rows, &cols);
+  fclose(Fl);
+  
+  fastICA(X, rows, cols, comp, K, W, A, S);
+	
+  for(j = 0;j<cols; j++){
+    Total[j] = 0;
+    for(i=0; i<rows; i++)
+      Total[j] = Total[j] + X[i][j];
+    Total[j] = Total[j]/rows;
+  }
+  
+  for(j=0; j<rows; j++)
+	  //S[j][k]=0;
+	
+  mat_mult(K, cols, comp, W, comp, comp, A); //A[cols, comp]
+  mat_inverse(A, comp, W);
+  mat_mult(S, rows, comp, W, comp, comp, _S);
+      
+  strcat(pFilePath, "_inICA_rmCom");
+  sprintf(chr, "%d", k);
+  strcat(pFilePath, chr);
+  strcat(pFilePath, "_Chan");
+  sprintf(chr, "%d", j);
+  strcat(pFilePath, chr);
+	
+  OutputFile = fopen(pFilePath, "wb");
+  for(i=0; i<rows; i++){
+    fprintf(OutputFile, "%f\n", _S[i][j]+Total[j]);
+  }
+  fclose(OutputFile);
+}
+/*
+JNIEXPORT jint JNICALL
+Java_com_eegsdk_ICA_icaTransform(JNIEnv *env, jobject thisObj, jstring javaString, jint rows, jint cols,jint comp){
+   const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
+   // use your string
+   icaTransform(nativeString, rows, cols,comp);
+   
+   (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
+  return 1;
+}
+  */
 void main(){
   char pFilePath[512];
   int rows, cols, comp;
@@ -72,8 +161,8 @@ void main(){
   scanf("%d", &comp);
   
   // Matrix creation
-  W = mat_create(comp, comp); //ma tran 2-2
-  A = mat_create(comp, comp); //ma tran 2-2
+  W = mat_create(comp, comp); 
+  A = mat_create(comp, comp); 
   K = mat_create(cols, comp);
   S = mat_create(rows, comp);	
   _S = mat_create(rows, comp);
@@ -166,9 +255,14 @@ void main(){
 	for(j=0; j<rows; j++)
 	  //S[j][k]=0;
 	
-	mat_mult(K, cols, comp, W, comp, comp, A);
-	mat_inverse(A, comp, W);
-	mat_mult(S, rows, comp, W, comp, comp, _S);
+	//mat_mult(K, cols, comp, W, comp, comp, A);
+	//mat_inverse(A, comp, W);
+	for(i=0;i<rows;i++)
+	  for(j=0;j<cols;j++)
+	    X[i][j]= X[i][j] - Total[j];
+	    
+	mat_mult(X, rows, cols, K, cols, comp, _S);	//_S[rows][comp]
+	mat_mult(S, rows, comp, W, comp, comp, _S); 	//_S[rows][comp]
 	
 	puts("ICA Transform Inverse Complete.");
 	printf("Printf Channel: ");
@@ -183,7 +277,8 @@ void main(){
 	
 	OutputFile = fopen(pFilePath, "wb");
 	for(i=0; i<rows; i++){
-	   fprintf(OutputFile, "%f\n", _S[i][j]+Total[j]);
+	   //fprintf(OutputFile, "%f\n", _S[i][j]+Total[j]);
+	   fprintf(OutputFile, "%f\n", S[i][j]);
 	}
 	fclose(OutputFile);
 	

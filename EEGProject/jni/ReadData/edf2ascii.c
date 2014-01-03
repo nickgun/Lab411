@@ -82,6 +82,13 @@ int readDataOfChannel(char *pFilePath, int Start_Sample, int Stop_Sample, int Ch
   return readData(pFilePath, Start_Sample, Stop_Sample, Channel);
 }
 
+/**
+ * Doc 1 khoang du lieu tai 1 kenh
+ */
+int readDataOfAllChannel(char *pFilePath, int Start_Sample, int Stop_Sample){
+  return readData(pFilePath, Start_Sample, Stop_Sample, 100);
+}
+
 JNIEXPORT jint JNICALL
 Java_com_eegsdk_ReadEdf_ReadData(JNIEnv *env, jobject thisObj, jstring javaString, jint Type, jint Start, jint Stop, jint Channel){
    const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
@@ -94,7 +101,7 @@ Java_com_eegsdk_ReadEdf_ReadData(JNIEnv *env, jobject thisObj, jstring javaStrin
          readAllDataOfChannel(nativeString, Channel);
       }break;
       case 3:{
-
+	 readDataOfAllChannel(nativeString, Start, Stop);
       }break;
       case 4:{
          readDataOfChannel(nativeString, Start, Stop, Channel);
@@ -1047,31 +1054,48 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   pPath = realpath(pFilePath, pFile);
   
   if(Channel == 100){
-    strcat(pPath, "_AllData");
-    outputfile = fopen(pPath, "wb");
-    for(i=0; i<eegDataSampleCount; i++){
-      for(j=0; j<signals; j++){
-	fprintf(outputfile, "%f ", _X[i][j]);
+    if(Stop_Sample==0){		//doc tat ca du lieu tat ca cac kenh
+      strcat(pPath, "_AllDataAllChan");
+      outputfile = fopen(pPath, "wb");
+      for(i=0; i<eegDataSampleCount; i++){
+	for(j=0; j<signals; j++){
+	  fprintf(outputfile, "%f ", _X[i][j]);
+	}
+	fprintf(outputfile, "\n");
       }
-      fprintf(outputfile, "\n");
+    }else{			//doc 1 khoang du lieu trong tat ca cac kenh
+      strcat(pPath, "_");
+      sprintf(chr, "%d", Start_Sample);
+      strcat(pPath, chr);
+      strcat(pPath, "_");
+      sprintf(chr, "%d", Stop_Sample);
+      strcat(pPath, chr);
+      strcat(pPath, "_AllChan");
+      outputfile = fopen(pPath, "wb");
+      for(i=0; i<eegDataSampleCount; i++){
+	for(j=0; j<signals; j++){
+	  fprintf(outputfile, "%f ", _X[i][j]);
+	}
+	fprintf(outputfile, "\n");
+      }
     }
   }else if(Stop_Sample==0){  //doc all data trong 1 kenh
      strcat(pPath, "_");
-    strcat(pPath, "_AllData_Channel");
+    strcat(pPath, "_AllData_Chan");
     sprintf(chr, "%d", Channel);
     strcat(pPath, chr);
     
     outputfile = fopen(pPath, "wb");
     for(i=0; i<eegDataSampleCount; i++)
       fprintf(outputfile, "%f\n", _X[i][Channel]);
-  }else{
+  }else{			//data of channal
     strcat(pPath, "_");
     sprintf(chr, "%d", Start_Sample);
     strcat(pPath, chr);
     strcat(pPath, "_");
     sprintf(chr, "%d", Stop_Sample);
     strcat(pPath, chr);
-    strcat(pPath, "_Data_Channel");
+    strcat(pPath, "_Data_Chan");
     sprintf(chr, "%d", Channel);
     strcat(pPath, chr);
     

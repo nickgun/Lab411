@@ -72,8 +72,8 @@ public class ReadEdf extends Activity {
 								0, 0, 0);
 						SdkMain.tvStatus
 								.append("\n- Read All Data Of All Channel, Output File:");
-						SdkMain.tvStatus.append("\n" + tvBrownFile_ReadEdf.getText()
-								+ "_AllData\n");
+						SdkMain.tvStatus.append("\n"
+								+ tvBrownFile_ReadEdf.getText() + "_AllDataAllChan\n");
 					}
 						break;
 					case R.id.rbAllDataOfChannel: {
@@ -91,8 +91,24 @@ public class ReadEdf extends Activity {
 							SdkMain.tvStatus.append("\nEnter Data!\n");
 					}
 						break;
-					case R.id.rbDataOfAllChannel:
+					case R.id.rbDataOfAllChannel: {
 						System.out.print("\nDataOfAllChannel");
+						String strStart = etStart.getText().toString();
+						String strEnd = etEnd.getText().toString();
+						if ((strStart.trim().length() > 0)
+								&& (strEnd.trim().length() > 0)) {
+							ReadData(tvBrownFile_ReadEdf.getText().toString(),
+									3, Integer.parseInt(strStart),
+									Integer.parseInt(strEnd), 0);
+							SdkMain.tvStatus
+									.append("\n- Read Data Of All Channel, Output File:");
+							SdkMain.tvStatus.append("\n"
+									+ tvBrownFile_ReadEdf.getText() + "_"
+									+ strStart + "_" + strEnd + "_AllChan"
+									+ "\n");
+						} else
+							SdkMain.tvStatus.append("\nEnter Data!\n");
+					}
 						break;
 					case R.id.rbDataOfChannel: {
 						System.out.print("\nDataOfChannel");
@@ -110,7 +126,7 @@ public class ReadEdf extends Activity {
 									.append("\n- Read Data Of Channel, Output File:");
 							SdkMain.tvStatus.append("\n"
 									+ tvBrownFile_ReadEdf.getText() + "_"
-									+ strStart + "_" + strEnd + "_Data_Channel"
+									+ strStart + "_" + strEnd + "_Data_Chan"
 									+ strChannel + "\n");
 						} else
 							SdkMain.tvStatus.append("\nEnter Data!\n");
@@ -122,9 +138,12 @@ public class ReadEdf extends Activity {
 				else
 					SdkMain.tvStatus.append("\nChoose Edf File!");
 
-				SdkMain.tvStatus.scrollTo(0, SdkMain.tvStatus.getLineCount()
-						* SdkMain.tvStatus.getLineHeight() + SdkMain.tvStatus.getTop()
-						- SdkMain.tvStatus.getBottom());
+				SdkMain.tvStatus.scrollTo(
+						0,
+						SdkMain.tvStatus.getLineCount()
+								* SdkMain.tvStatus.getLineHeight()
+								+ SdkMain.tvStatus.getTop()
+								- SdkMain.tvStatus.getBottom());
 			}
 		});
 	}

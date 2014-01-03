@@ -2,27 +2,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="horizontal"
+    android:weightSum="1" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Printf Component:" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/etCompPrintf"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Component Printf"
-        android:inputType="numberDecimal" />
+        <TextView
+            android:id="@+id/tvChooseICAProsInput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:hint="Click here for choose Edf file" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Rows of Data Input:" />
+
+        <EditText
+            android:id="@+id/etRowsICAPros"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Rows"
+            android:inputType="numberDecimal" >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Cols Of Data Input" />
+
+        <EditText
+            android:id="@+id/etColsICAPros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Cols"
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Component:" />
+
+        <EditText
+            android:id="@+id/etCompICAPros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Comp"
+            android:inputType="numberDecimal" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnICApros"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
         android:layout_marginTop="20dp"
+        android:layout_weight="0.30"
         android:text="Run FastICA Pros" />
 
 </LinearLayout>
