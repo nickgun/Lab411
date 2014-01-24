@@ -4,8 +4,12 @@
 #include <math.h>
 
 #include "wavelet_daub4.h"
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/wavelet_daub4.c
+#include "eegdata_conf.h"
+=======
 #include "../eegdata_conf.h"
 #include <jni.h>
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/Wavelet/wavelet_daub4.c
 
 //#include "../../../../../../Downloads/swt-0.1.0rc4/test/utility_test.sce"
 
@@ -34,6 +38,63 @@ static double *read_data_from_file(char *pFilePath, int Sample)
     return u;	
   }
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/wavelet_daub4.c
+void WaveletTransform(double *Data, int Sample, int CompIndex, double **Data_WT){
+  FILE *OutputFile;
+  int i;
+  char path[512];
+
+  Data_WT = daub4_transform(Sample, Data);
+	
+  if(CompIndex==0)
+    OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA_DWT", "wb");
+  else
+    OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA_DWT", "ab");
+  
+  fprintf(OutputFile, "**********************Comp %i\n", CompIndex);  
+  for(i=0; i<Sample; i++)
+    fprintf(OutputFile, "%f\n", Data_WT[i]);  
+  fclose(OutputFile);  
+}
+
+double* WaveletTransformInverse(double *Data, int Sample, int CompIndex, int Level){
+   double *Data_DWT;
+   double *Data_IDWT;
+   FILE *OutputFile;
+   int i;
+   int a, b;
+
+   Data_DWT = daub4_transform(Sample, Data);
+	
+   a = Sample;
+   i = Level;
+   for(i; i>=0; i--)
+      a = a / 2;
+   b= a*2;
+   
+   for(i=0; i<a; i++)
+      Data_DWT[i] = 0;
+   for(i=b; i < Sample; i++)
+      Data_DWT[i] = 0;
+
+  Data_IDWT = daub4_transform_inverse(Sample, Data_DWT);
+   
+  if(CompIndex==CHANNEL_NUMBER_MAX)
+    OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataFp2_IDWT", "wb");
+  else if(CompIndex==0){
+    OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA_IDWT", "wb");
+    fprintf(OutputFile, "**********************Comp %i\n", CompIndex);  
+  }else{
+    OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA_IDWT", "ab");
+    fprintf(OutputFile, "**********************Comp %i\n", CompIndex);  
+  }
+  
+  for(i = 0; i<Sample; i++)
+    fprintf(OutputFile, "%f\n", Data_IDWT[i]);
+  fclose(OutputFile);
+  
+  return Data_IDWT;
+=======
 void WaveletTransform(char *pFilePath, int Sample){
    double *Data;
    double *Data_WT;
@@ -66,7 +127,6 @@ void WaveletTransformInverse(char *pFilePath, int Sample, int Lever){
    Data_WT = daub4_transform(Sample, Data);
 	
    a = Sample;
-   i = Lever;
    for(i; i>=0; i--)
       a = a / 2;
    b= a*2;
@@ -190,6 +250,7 @@ void main(){
 	break;
     }
   }
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/Wavelet/wavelet_daub4.c
 }
     
 double *daub4_transform ( int n, double x[] )

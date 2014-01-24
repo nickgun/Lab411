@@ -37,9 +37,14 @@
 #endif
 #include <locale.h>
 #include "edf2ascii.h"
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+#include "eegdata_conf.h"
+#include "matrix.h"
+=======
 #include "../eegdata_conf.h"
 #include "../matrix.h"
 #include <jni.h>
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
 
 void utf8_to_latin1(char *);
 int eegDataSampleCount = 0; //so mau tin hieu lay duoc
@@ -47,6 +52,12 @@ char *pFile;
 char *pPath;
 char chr[10];
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+char ChanNum[19][3] = {
+  "Pz", "Cz", "Fz", "P3", "C3", "F3", "Fp1", "T5", "T3", "F7", "P4", "C4", "F4", "Fp2", "T6", "T4", "F8", "O2", "O1"
+};
+=======
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
 
 struct edfparamblock{
          int smp_per_record;
@@ -61,6 +72,13 @@ struct edfparamblock{
          double sense;
        } *edfparam;
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+//mat A la ma tran chua du lieu cua 14 kenh khi doc tu file Edf ra.
+//int readData(mat X)
+int readData(char *pFilePath, double** XReturn, int StartSample, int StopSample)
+{
+  double** X;
+=======
 /**
  * Doc tat ca du lieu trong file Edf
  */
@@ -206,6 +224,7 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
 {
   mat _X;
   
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
 
   FILE *inputfile,
        *outputfile,
@@ -260,6 +279,10 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
 
   setlocale(LC_ALL, "C");
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+  X = mat_create(SAMPLE_MAX,CHANNEL_NUMBER_MAX);
+  
+=======
   /*
   if(argc!=2)
   {
@@ -271,6 +294,7 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   }*/
 
   _X = mat_create(SAMPLE_MAX,CHANNEL_NUMBER_MAX);
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
   eegDataSampleCount = 0;
   //strcpy(path, "/storage/sdcard0/NickGun/EEG/ap-eyeblink-26.11.10.01.04.20.edf");
   //strcpy(ascii_path, "/storage/sdcard0/NickGun/EEG/ap-eyeblink-26.11.10.01.04.20.edf");
@@ -993,8 +1017,13 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
           fprintf(outputfile, "%f ", value_tmp);//ham nay write du lieu 36 kenh vao file data
 	
 	  
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+	  //luu du lieu vao X[][]
+	  X[eegDataSampleCount][j] = value_tmp;
+=======
 	  //luu du lieu vao _X[][]
 	  _X[eegDataSampleCount][j] = value_tmp;
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
 	    
 	    
           edfparam[j].smp_written++;
@@ -1053,6 +1082,38 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   
   pPath = realpath(pFilePath, pFile);
   
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+ 
+  //doc 1 khoang du lieu trong tat ca cac kenh
+  strcat(pPath, "_");
+  sprintf(chr, "%d", StartSample);
+  strcat(pPath, chr);
+  strcat(pPath, "_");
+  sprintf(chr, "%d", StopSample);
+  strcat(pPath, chr);
+  strcat(pPath, "_AllChan");
+  outputfile = fopen(pPath, "wb");
+  /*for(j=0; j<signals; j++){
+    fprintf(outputfile, "***********************Channel %i:\n", j);
+    for(i=StartSample; i<StopSample; i++){
+      XReturn[i-StartSample][j]= X[i][j];
+      fprintf(outputfile, "%f\n", X[i][j]);
+    }
+  }*/
+  for(i=StartSample; i<StopSample; i++){
+    for(j=0; j<signals; j++){
+      XReturn[i-StartSample][j]= X[i][j];
+      fprintf(outputfile, "%f ", X[i][j]);
+    }
+  }
+  fclose(outputfile);
+
+  
+  mat_delete(X, SAMPLE_MAX, CHANNEL_NUMBER_MAX);
+  
+  fclose(inputfile);
+  
+=======
   if(Channel == 100){
     if(Stop_Sample==0){		//doc tat ca du lieu tat ca cac kenh
       strcat(pPath, "_AllDataAllChan");
@@ -1072,7 +1133,7 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
       strcat(pPath, chr);
       strcat(pPath, "_AllChan");
       outputfile = fopen(pPath, "wb");
-      for(i=Start_Sample; i<Stop_Sample; i++){
+      for(i=0; i<eegDataSampleCount; i++){
 	for(j=0; j<signals; j++){
 	  fprintf(outputfile, "%f ", _X[i][j]);
 	}
@@ -1115,14 +1176,20 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   
   
   
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
   free(edf_hdr);
   free(edfparam);
   free(cnv_buf);
   free(time_in_txt);
   free(duration_in_txt);
   free(scratchpad);
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/edf2ascii.c~
+  
+  return 1;
+=======
 
   return(eegDataSampleCount);
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ReadData/edf2ascii.c
 }
 
 

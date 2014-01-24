@@ -66,6 +66,7 @@ void WaveletTransformInverse(char *pFilePath, int Sample, int Lever){
    Data_WT = daub4_transform(Sample, Data);
 	
    a = Sample;
+   i = Lever;
    for(i; i>=0; i--)
       a = a / 2;
    b= a*2;
@@ -94,7 +95,7 @@ Java_com_eegsdk_Wavelet_WaveletTransform(JNIEnv *env, jobject thisObj, jstring j
   return 1;
 }
 JNIEXPORT jint JNICALL
-Java_com_eegsdk_SdkMain_WaveletTransformInverse(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample, jint Lever){
+Java_com_eegsdk_Wavelet_WaveletTransformInverse(JNIEnv *env, jobject thisObj, jstring javaString, jint Sample, jint Lever){
    const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
    // use your string
    WaveletTransformInverse(nativeString, Sample, Lever);

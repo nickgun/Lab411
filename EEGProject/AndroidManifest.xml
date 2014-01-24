@@ -37,6 +37,11 @@
         </activity>
         <activity android:name="com.eegsdk.ICA" >
         </activity>
+<<<<<<< HEAD:Lab411/EEGProject/AndroidManifest.xml
+        <activity android:name="com.detectevent.GazeEye" >
+        </activity>
+=======
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/AndroidManifest.xml
     </application>
 
 </manifest>

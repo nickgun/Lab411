@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include "fastICA.h"
-#include "../matrix.h"
+#include "matrix.h"
 #include "svdcmp.h"
-#include "../eegdata_conf.h"
+#include "eegdata_conf.h"
 #include <time.h>
-#//include <jni.h>
 
 
 /*
@@ -55,247 +54,57 @@ static double **mat_read(FILE *fp, int *rows, int *cols)
     return M;	
   }
 
-void icaTransform(char *pFilePath, int rows, int cols,int comp){
-  double **X, **K, **W, **A, **S, **_S;
+void icaTransform(double** X, int rows, int cols,int comp, double **S, double** K, double** W){
+  double **A;
   FILE *Fl;
   FILE * OutputFile;
   int i, j;
   
-  // Matrix creation
-  W = mat_create(comp, comp);
   A = mat_create(comp, comp); 
-  K = mat_create(cols, comp);
-  S = mat_create(rows, comp);
-  
-  Fl = fopen(pFilePath, "r");
-  X = mat_read(Fl, &rows, &cols);
-  fclose(Fl);
-  
   fastICA(X, rows, cols, comp, K, W, A, S);
-	
-  strcat(pFilePath, "_ICA");
-  OutputFile = fopen(pFilePath, "wb");
-  for(i=0; i<rows; i++){
-    for(j=0; j<comp; j++){
-      fprintf(OutputFile, "%f ", S[i][j]);
+  OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA", "wb");
+  for(j=0; j<comp; j++){
+    fprintf(OutputFile, "********************Comp %i\n", j);
+    for(i=0; i<rows; i++){
+      fprintf(OutputFile, "%f\n", S[i][j]);
     }
-    fprintf(OutputFile, "\n");
   }
   fclose(OutputFile);
 }
 
-void icaTransformInverse(char *pFilePath, int rows, int cols,int comp, int comp_rm){
-  double **X, **K, **W, **A, **S, **_S;
+void icaTransformInverse(double** S, int rows, int cols,int comp, int comp_rm, double** X, double** K, double** W, double** RowData){
+  double **A;
   double *Total;
-  FILE *Fl;
   FILE * OutputFile;
   int i, j, k;
-  char chr[10];
   
-  // Matrix creation
-  W = mat_create(comp, comp);
   A = mat_create(comp, comp); 
-  K = mat_create(cols, comp);
-  S = mat_create(rows, comp);
-  _S = mat_create(rows, comp);
+  Total = malloc(cols*sizeof(double));
   
-  Fl = fopen(pFilePath, "r");
-  X = mat_read(Fl, &rows, &cols);
-  fclose(Fl);
-  
-  fastICA(X, rows, cols, comp, K, W, A, S);
-	
   for(j = 0;j<cols; j++){
     Total[j] = 0;
     for(i=0; i<rows; i++)
-      Total[j] = Total[j] + X[i][j];
+      Total[j] = Total[j] + RowData[i][j];
     Total[j] = Total[j]/rows;
   }
   
-  for(j=0; j<rows; j++)
-	  //S[j][k]=0;
+ for(j=0; j<rows; j++)
+    S[j][comp_rm]=0;
 	
   mat_mult(K, cols, comp, W, comp, comp, A); //A[cols, comp]
   mat_inverse(A, comp, W);
-  mat_mult(S, rows, comp, W, comp, comp, _S);
-      
-  strcat(pFilePath, "_inICA_rmCom");
-  sprintf(chr, "%d", k);
-  strcat(pFilePath, chr);
-  strcat(pFilePath, "_Chan");
-  sprintf(chr, "%d", j);
-  strcat(pFilePath, chr);
-	
-  OutputFile = fopen(pFilePath, "wb");
+  mat_mult(S, rows, comp, W, comp, comp, X);
+  
+  OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataRecontruction", "wb");
   for(i=0; i<rows; i++){
-    fprintf(OutputFile, "%f\n", _S[i][j]+Total[j]);
+    fprintf(OutputFile, "%f\n", X[i][13]+Total[13]);
+  }
+  for(j = 0;j<cols; j++){
+    for(i=0; i<rows; i++)
+      X[i][j]= X[i][j]+Total[j];
   }
   fclose(OutputFile);
-}
-/*
-JNIEXPORT jint JNICALL
-Java_com_eegsdk_ICA_icaTransform(JNIEnv *env, jobject thisObj, jstring javaString, jint rows, jint cols,jint comp){
-   const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
-   // use your string
-   icaTransform(nativeString, rows, cols,comp);
-   
-   (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
-  return 1;
-}
-  */
-void main(){
-  char pFilePath[512];
-  int rows, cols, comp;
-  int i, j, k;
-  double **X, **K, **W, **A, **S, **_S;
-  FILE *OutputFile;
-  FILE *Fl;
-  char chr[10];
-  double *Total;
-  
-  printf("Type Rows:");
-  scanf("%d", &rows);
-  printf("Type Cols:");
-  scanf("%d", &cols);
-  printf("Type Comp:");
-  scanf("%d", &comp);
-  
-  // Matrix creation
-  W = mat_create(comp, comp); 
-  A = mat_create(comp, comp); 
-  K = mat_create(cols, comp);
-  S = mat_create(rows, comp);	
-  _S = mat_create(rows, comp);
-    
-  while(1){
-    puts("\n\n\n#################### FASTICA ####################");
-    puts("1. ICA Transform.");
-    puts("2. ICA Transform Inverse.");
-    puts("3. Restart.");
-    puts("4. Exit.");
-    printf("Choose Menu: ");
-    scanf("%i",&i);
-    
-    switch(i){
-      case 1:{
-	printf("Type Path File:");
-	scanf("%s", pFilePath);
-	
-	Fl = fopen(pFilePath, "r");
-	X = mat_read(Fl, &rows, &cols);
-	fclose(Fl);
-	
-	fastICA(X, rows, cols, comp, K, W, A, S);
-	
-	strcat(pFilePath, "_ICA");
-	OutputFile = fopen(pFilePath, "wb");
-	for(i=0; i<rows; i++){
-	  for(j=0; j<comp; j++){
-	    fprintf(OutputFile, "%f ", S[i][j]);
-	  }
-	  fprintf(OutputFile, "\n");
-	}
-	fclose(OutputFile);
-	
-	puts("ICA Transform Complete, File:");
-	puts(pFilePath);
-	
-	while(1){
-	  puts("#####ChildMenu:");
-	  puts("1. Fprintf Component.");
-	  puts("2. Exit.");
-	  printf("Choose Menu: ");
-	  scanf("%i",&i);
-	  
-	  if(i==2)
-	    break;
-	  switch(i){
-	    case 1:{
-	      printf("Choose Component: ");
-	      scanf("%i", &i);
-	      
-	      strcat(pFilePath, "_Comp");
-	      sprintf(chr, "%d", i);
-	      strcat(pFilePath, chr);
-	      
-	      OutputFile = fopen(pFilePath, "wb");
-	      for(j=0; j<rows; j++)
-		fprintf(OutputFile, "%f\n", S[j][i]);
-	      fclose(OutputFile);
-	      
-	      puts("Printf Component Complete, File:");
-	      puts(pFilePath);
-	    }break;
-	    default:
-	      break;
-	  }
-	}
-      }break;
-      case 2:{
-	printf("Type Path File:");
-	scanf("%s", pFilePath);
-	
-	printf("Remove Component: ");
-	scanf("%i", &k);
-	
-	Total = malloc(cols * sizeof(double));
-	
-	Fl = fopen(pFilePath, "r");
-	X = mat_read(Fl, &rows, &cols);
-	fclose(Fl);
-	fastICA(X, rows, cols, comp, K, W, A, S);
-	
-	for(j = 0;j<cols; j++){
-	  Total[j] = 0;
-	  for(i=0; i<rows; i++)
-	    Total[j] = Total[j] + X[i][j];
-	  Total[j] = Total[j]/rows;
-	}
-	
-	for(j=0; j<rows; j++)
-	  //S[j][k]=0;
-	
-	//mat_mult(K, cols, comp, W, comp, comp, A);
-	//mat_inverse(A, comp, W);
-	for(i=0;i<rows;i++)
-	  for(j=0;j<cols;j++)
-	    X[i][j]= X[i][j] - Total[j];
-	    
-	mat_mult(X, rows, cols, K, cols, comp, _S);	//_S[rows][comp]
-	mat_mult(S, rows, comp, W, comp, comp, _S); 	//_S[rows][comp]
-	
-	
-	puts("ICA Transform Inverse Complete.");
-	printf("Printf Channel: ");
-	scanf("%i", &j);
-      
-	strcat(pFilePath, "_inICA_rmCom");
-	sprintf(chr, "%d", k);
-	strcat(pFilePath, chr);
-	strcat(pFilePath, "_Chan");
-	sprintf(chr, "%d", j);
-	strcat(pFilePath, chr);
-	
-	OutputFile = fopen(pFilePath, "wb");
-	for(i=0; i<rows; i++){
-	   //fprintf(OutputFile, "%f\n", _S[i][j]+Total[j]);
-	   fprintf(OutputFile, "%f\n", S[i][j]);
-	}
-	fclose(OutputFile);
-	
-	puts("Printf Channel Complete, File:");
-	puts(pFilePath);
-      }break;
-      case 3:{
-	
-      }break;
-      case 4:{
-	return;
-      }break;
-      default:
-	break;
-    }
-  }
+  free(Total);
 }
 
 /**
@@ -356,7 +165,7 @@ static mat ICA_compute(mat X, int rows, int cols)
   mat_apply_fx(TXp, cols, rows, fx_div_c, cols);
   
   
-  while (lim[it] > TOLERANCE && it < MAX_ITERATIONS) {
+  while (lim[it] >= TOLERANCE && it < MAX_ITERATIONS) {
     // wx <- W %*% X
     mat_mult(Wd, rows, rows, X, rows, cols, GWX);
     
@@ -398,14 +207,8 @@ static mat ICA_compute(mat X, int rows, int cols)
     mat_copy(W, rows, rows, Wd);
     
     it++;
-    //Log = fopen(ascii_path, "at");
-    //fprintf(Log, "lim[it] = %2.8f\n", lim[it]);
-    //fclose(Log);
   }
-  //Log = fopen(ascii_path, "at");
-  //fprintf(Log, "it = %d\n",it);
-  //fclose(Log);
-  
+  printf("%i  ---   %f\n", it, lim[it]);
   
   // clean up
   mat_delete(TXp, cols, rows);

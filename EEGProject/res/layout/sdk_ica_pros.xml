@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:hint="Click here for choose Edf file" />
+            android:hint="Click here for choose Data file" />
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Rows of Data Input:" />
+            android:text="Rows Of Data Input:" />
 
         <EditText
             android:id="@+id/etRowsICAPros"

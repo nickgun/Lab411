@@ -6,4 +6,3 @@
 //so kenh EEG
 #define CHANNEL_NUMBER_MAX 19
 
-

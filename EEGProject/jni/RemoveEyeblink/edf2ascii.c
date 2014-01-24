@@ -37,9 +37,8 @@
 #endif
 #include <locale.h>
 #include "edf2ascii.h"
-#include "../eegdata_conf.h"
-#include "../matrix.h"
-#include <jni.h>
+#include "eegdata_conf.h"
+#include "matrix.h"
 
 void utf8_to_latin1(char *);
 int eegDataSampleCount = 0; //so mau tin hieu lay duoc
@@ -47,6 +46,9 @@ char *pFile;
 char *pPath;
 char chr[10];
 
+char ChanNum[19][3] = {
+  "Pz", "Cz", "Fz", "P3", "C3", "F3", "Fp1", "T5", "T3", "F7", "P4", "C4", "F4", "Fp2", "T6", "T4", "F8", "O2", "O1"
+};
 
 struct edfparamblock{
          int smp_per_record;
@@ -61,151 +63,11 @@ struct edfparamblock{
          double sense;
        } *edfparam;
 
-/**
- * Doc tat ca du lieu trong file Edf
- */
-int readAllDataOfAllChannel(char *pFilePath){
-  return readData(pFilePath, 0, 0, 100);
-}
-
-/**
- * Doc tat ca du lieu tai 1 kenh
- */
-int readAllDataOfChannel(char *pFilePath, int Channel){
-  return readData(pFilePath, 0, 0, Channel);
-}
-
-/**
- * Doc du lieu tai 1 kenh
- */
-int readDataOfChannel(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel){
-  return readData(pFilePath, Start_Sample, Stop_Sample, Channel);
-}
-
-/**
- * Doc 1 khoang du lieu tai 1 kenh
- */
-int readDataOfAllChannel(char *pFilePath, int Start_Sample, int Stop_Sample){
-  return readData(pFilePath, Start_Sample, Stop_Sample, 100);
-}
-
-JNIEXPORT jint JNICALL
-Java_com_eegsdk_ReadEdf_ReadData(JNIEnv *env, jobject thisObj, jstring javaString, jint Type, jint Start, jint Stop, jint Channel){
-   const char *nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
-   // use your string
-   switch(Type){
-      case 1:{
-         readAllDataOfAllChannel(nativeString);
-      }break;
-      case 2:{
-         readAllDataOfChannel(nativeString, Channel);
-      }break;
-      case 3:{
-	 readDataOfAllChannel(nativeString, Start, Stop);
-      }break;
-      case 4:{
-         readDataOfChannel(nativeString, Start, Stop, Channel);
-      }break;
-      default:
-      break;
-   }
-   (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
-  return 1;
-}
-
-void main(){
-  int i, j;
-  int Start, Stop;
-  char c;
-  char pFilePath[512];
-    //readAllData("/home/nick_gun/Desktop/Lab-2013/SAMSUNG_2013_2014/Code/Code26.12.2013/Data/Eyeblink2/Eyeblink2.edf");
-    //readChannelData("/home/nick_gun/Desktop/Lab-2013/SAMSUNG_2013_2014/Code/Code26.12.2013/Data/Eyeblink2/Eyeblink2.edf", 0, 128, 2);
-    //puts("Complete!");
-    
-    while(1){
-      puts("\n\n\n#################### READ EDF ####################");
-      puts("Choose Menu:");
-      puts("1. Read All Data In Edf File.");
-      puts("2. Read All Data Of Channel.");
-      puts("3. Read Data Of Channel.");
-      puts("4. Exit.");
-      puts("**************************************************"); 
-      printf("Choose Menu: ");
-      scanf("%i", &i);
-      
-      switch(i){
-	case 1: {
-	  printf("Type Path File:");
-	  scanf("%s", pFilePath);
-	  if(readAllDataOfAllChannel(pFilePath)!=0){
-	    strcat(pFilePath, "_All_Sample.txt");
-	    printf("\nRead All Data Commplete, Data save in file:");
-	    puts(pFilePath);  
-	  }else
-	    printf("Read File Error!");
-	}break;
-	case 2: {
-	  printf("Type Path File:");
-	  scanf("%s", pFilePath);
-	  printf("Type Channel:");
-	  scanf("%i", &i);
-	  //  /home/nick_gun/Desktop/Lab-2013/SAMSUNG_2013_2014/Code/Code26.12.2013/Data/Eyeblink2/Eyeblink2.edf
-	  if(readAllDataOfChannel(pFilePath, i))
-	  {
-	    pPath = realpath(pFilePath, pFile);
-	    strcat(pPath, "_All_Data_Of_Channel_");
-	    sprintf(chr, "%d", i);
-	    strcat(pPath, chr);
-	    strcat(pPath, ".txt");
-	    printf("\n\nRead All Data Of Channel %i Commplete, Data save in file:\n", i);
-	    puts(pPath);
-	  }else
-	    printf("Read File Error!");
-	}break;
-	case 3: {
-	  printf("Type Path File:");
-	  scanf("%s", pFilePath);
-	  printf("Type Channel:");
-	  scanf("%i", &i);
-	  printf("Type Start Sample:");
-	  scanf("%i", &Start);
-	  printf("Type Stop Sample:");
-	  scanf("%i", &Stop);
-	  
-	  if(readDataOfChannel(pFilePath, Start, Stop, i))
-	  {
-	    pPath = realpath(pFilePath, pFile);
-	    strcat(pPath, "_");
-	    sprintf(chr, "%d", Start);
-	    strcat(pPath, chr);
-	    strcat(pPath, "_");
-	    sprintf(chr, "%d", Stop);
-	    strcat(pPath, chr);
-	    strcat(pPath, "_Data_Of_Channel_");
-	    sprintf(chr, "%d", i);
-	    strcat(pPath, chr);
-	    strcat(pPath, ".txt");
-	    printf("\n\nRead Data Of Channel %i Commplete, Sample from %i to %i. Data save in file:\n", i, Start, Stop);
-	    puts(pPath);
-	  }else
-	    printf("Read File Error!");
-	}break;
-	case 4:{
-	  puts("#################### BYE  BYE ####################");
-	  return;
-	}break;
-	default:
-	  break;
-      }
-    }
-}
-
 //mat A la ma tran chua du lieu cua 14 kenh khi doc tu file Edf ra.
 //int readData(mat X)
-int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
+int readData(char *pFilePath, double** XReturn, int StartSample, int StopSample)
 {
-  mat _X;
-  
+  double** X;
 
   FILE *inputfile,
        *outputfile,
@@ -260,17 +122,8 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
 
   setlocale(LC_ALL, "C");
 
-  /*
-  if(argc!=2)
-  {
-    printf("\nEDF(+) or BDF(+) to ASCII converter version 1.3\n"
-           "Copyright 2007, 2008, 2009, 2010 Teunis van Beelen\n"
-           "teuniz@gmail.com\n"
-           "Usage: edf2ascii <filename>\n\n");
-    return(0);
-  }*/
-
-  _X = mat_create(SAMPLE_MAX,CHANNEL_NUMBER_MAX);
+  X = mat_create(SAMPLE_MAX,CHANNEL_NUMBER_MAX);
+  
   eegDataSampleCount = 0;
   //strcpy(path, "/storage/sdcard0/NickGun/EEG/ap-eyeblink-26.11.10.01.04.20.edf");
   //strcpy(ascii_path, "/storage/sdcard0/NickGun/EEG/ap-eyeblink-26.11.10.01.04.20.edf");
@@ -993,8 +846,8 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
           fprintf(outputfile, "%f ", value_tmp);//ham nay write du lieu 36 kenh vao file data
 	
 	  
-	  //luu du lieu vao _X[][]
-	  _X[eegDataSampleCount][j] = value_tmp;
+	  //luu du lieu vao X[][]
+	  X[eegDataSampleCount][j] = value_tmp;
 	    
 	    
           edfparam[j].smp_written++;
@@ -1053,67 +906,36 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   
   pPath = realpath(pFilePath, pFile);
   
-  if(Channel == 100){
-    if(Stop_Sample==0){		//doc tat ca du lieu tat ca cac kenh
-      strcat(pPath, "_AllDataAllChan");
-      outputfile = fopen(pPath, "wb");
-      for(i=0; i<eegDataSampleCount; i++){
-	for(j=0; j<signals; j++){
-	  fprintf(outputfile, "%f ", _X[i][j]);
-	}
-	fprintf(outputfile, "\n");
-      }
-    }else{			//doc 1 khoang du lieu trong tat ca cac kenh
-      strcat(pPath, "_");
-      sprintf(chr, "%d", Start_Sample);
-      strcat(pPath, chr);
-      strcat(pPath, "_");
-      sprintf(chr, "%d", Stop_Sample);
-      strcat(pPath, chr);
-      strcat(pPath, "_AllChan");
-      outputfile = fopen(pPath, "wb");
-      for(i=Start_Sample; i<Stop_Sample; i++){
-	for(j=0; j<signals; j++){
-	  fprintf(outputfile, "%f ", _X[i][j]);
-	}
-	fprintf(outputfile, "\n");
-      }
+ 
+  //doc 1 khoang du lieu trong tat ca cac kenh
+  strcat(pPath, "_");
+  sprintf(chr, "%d", StartSample);
+  strcat(pPath, chr);
+  strcat(pPath, "_");
+  sprintf(chr, "%d", StopSample);
+  strcat(pPath, chr);
+  strcat(pPath, "_AllChan");
+  outputfile = fopen(pPath, "wb");
+  /*for(j=0; j<signals; j++){
+    fprintf(outputfile, "***********************Channel %i:\n", j);
+    for(i=StartSample; i<StopSample; i++){
+      XReturn[i-StartSample][j]= X[i][j];
+      fprintf(outputfile, "%f\n", X[i][j]);
     }
-  }else if(Stop_Sample==0){  //doc all data trong 1 kenh
-     strcat(pPath, "_");
-    strcat(pPath, "_AllData_Chan");
-    sprintf(chr, "%d", Channel);
-    strcat(pPath, ChanNum[Channel]);
-    
-    outputfile = fopen(pPath, "wb");
-    for(i=0; i<eegDataSampleCount; i++)
-      fprintf(outputfile, "%f\n", _X[i][Channel]);
-  }else{			//data of channal
-    strcat(pPath, "_");
-    sprintf(chr, "%d", Start_Sample);
-    strcat(pPath, chr);
-    strcat(pPath, "_");
-    sprintf(chr, "%d", Stop_Sample);
-    strcat(pPath, chr);
-    strcat(pPath, "_Data_Chan");
-    sprintf(chr, "%d", Channel);
-    strcat(pPath, ChanNum[Channel]);
-    
-    outputfile = fopen(pPath, "wb");
-    for(i=Start_Sample; i<Stop_Sample; i++)
-      fprintf(outputfile, "%f\n", _X[i][Channel]);
+  }*/
+  for(i=StartSample; i<StopSample; i++){
+    for(j=0; j<signals; j++){
+      XReturn[i-StartSample][j]= X[i][j];
+      fprintf(outputfile, "%f ", X[i][j]);
+    }
+    fprintf(outputfile, "\n", X[i][j]);
   }
   fclose(outputfile);
 
-  //mat_copy(_X, SAMPLE_MAX, CHANNEL_NUMBER, X);
   
-  mat_delete(_X, SAMPLE_MAX, CHANNEL_NUMBER_MAX);
+  mat_delete(X, SAMPLE_MAX, CHANNEL_NUMBER_MAX);
   
   fclose(inputfile);
-  
-  //fclose(annotationfile);//tantn
-  
-  
   
   free(edf_hdr);
   free(edfparam);
@@ -1121,8 +943,8 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
   free(time_in_txt);
   free(duration_in_txt);
   free(scratchpad);
-
-  return(eegDataSampleCount);
+  
+  return 1;
 }
 
 

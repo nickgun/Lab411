@@ -2,11 +2,18 @@
 #include <stdlib.h>
 #include <math.h>
 #include "fastICA.h"
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/fastICA.c
+#include "matrix.h"
+#include "svdcmp.h"
+#include "eegdata_conf.h"
+#include <time.h>
+=======
 #include "../matrix.h"
 #include "svdcmp.h"
 #include "../eegdata_conf.h"
 #include <time.h>
 #//include <jni.h>
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ICA/fastICA.c
 
 
 /*
@@ -55,12 +62,27 @@ static double **mat_read(FILE *fp, int *rows, int *cols)
     return M;	
   }
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/fastICA.c
+void icaTransform(double** X, int rows, int cols,int comp, double **S, double** K, double** W){
+  double **A;
+=======
 void icaTransform(char *pFilePath, int rows, int cols,int comp){
   double **X, **K, **W, **A, **S, **_S;
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ICA/fastICA.c
   FILE *Fl;
   FILE * OutputFile;
   int i, j;
   
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/fastICA.c
+  A = mat_create(comp, comp); 
+  fastICA(X, rows, cols, comp, K, W, A, S);
+  OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataICA", "wb");
+  for(j=0; j<comp; j++){
+    fprintf(OutputFile, "********************Comp %i\n", j);
+    for(i=0; i<rows; i++){
+      fprintf(OutputFile, "%f\n", S[i][j]);
+    }
+=======
   // Matrix creation
   W = mat_create(comp, comp);
   A = mat_create(comp, comp); 
@@ -80,10 +102,46 @@ void icaTransform(char *pFilePath, int rows, int cols,int comp){
       fprintf(OutputFile, "%f ", S[i][j]);
     }
     fprintf(OutputFile, "\n");
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ICA/fastICA.c
   }
   fclose(OutputFile);
 }
 
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/fastICA.c
+void icaTransformInverse(double** S, int rows, int cols,int comp, int comp_rm, double** X, double** K, double** W, double** RowData){
+  double **A;
+  double *Total;
+  FILE * OutputFile;
+  int i, j, k;
+  
+  A = mat_create(comp, comp); 
+  Total = malloc(cols*sizeof(double));
+  
+  for(j = 0;j<cols; j++){
+    Total[j] = 0;
+    for(i=0; i<rows; i++)
+      Total[j] = Total[j] + RowData[i][j];
+    Total[j] = Total[j]/rows;
+  }
+  
+ for(j=0; j<rows; j++)
+    S[j][comp_rm]=0;
+	
+  mat_mult(K, cols, comp, W, comp, comp, A); //A[cols, comp]
+  mat_inverse(A, comp, W);
+  mat_mult(S, rows, comp, W, comp, comp, X);
+  
+  OutputFile = fopen("/home/nick_gun/Desktop/RemoveEyeBlink/DataRecontruction", "wb");
+  for(i=0; i<rows; i++){
+    fprintf(OutputFile, "%f\n", X[i][13]+Total[13]);
+  }
+  for(j = 0;j<cols; j++){
+    for(i=0; i<rows; i++)
+      X[i][j]= X[i][j]+Total[j];
+  }
+  fclose(OutputFile);
+  free(Total);
+=======
 void icaTransformInverse(char *pFilePath, int rows, int cols,int comp, int comp_rm){
   double **X, **K, **W, **A, **S, **_S;
   double *Total;
@@ -296,6 +354,7 @@ void main(){
 	break;
     }
   }
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ICA/fastICA.c
 }
 
 /**
@@ -398,6 +457,10 @@ static mat ICA_compute(mat X, int rows, int cols)
     mat_copy(W, rows, rows, Wd);
     
     it++;
+<<<<<<< HEAD:Lab411/EEGProject/jni/RemoveEyeblink/fastICA.c
+  }
+  printf("%i  ---   %f\n", it, lim[it]);
+=======
     //Log = fopen(ascii_path, "at");
     //fprintf(Log, "lim[it] = %2.8f\n", lim[it]);
     //fclose(Log);
@@ -406,6 +469,7 @@ static mat ICA_compute(mat X, int rows, int cols)
   //fprintf(Log, "it = %d\n",it);
   //fclose(Log);
   
+>>>>>>> 0e6c2ddc6392d874db78384fed8abb5b7ff65346:EEGProject/jni/ICA/fastICA.c
   
   // clean up
   mat_delete(TXp, cols, rows);

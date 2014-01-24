@@ -1072,7 +1072,7 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
       strcat(pPath, chr);
       strcat(pPath, "_AllChan");
       outputfile = fopen(pPath, "wb");
-      for(i=0; i<eegDataSampleCount; i++){
+      for(i=Start_Sample; i<Stop_Sample; i++){
 	for(j=0; j<signals; j++){
 	  fprintf(outputfile, "%f ", _X[i][j]);
 	}
@@ -1083,7 +1083,7 @@ int readData(char *pFilePath, int Start_Sample, int Stop_Sample, int Channel)
      strcat(pPath, "_");
     strcat(pPath, "_AllData_Chan");
     sprintf(chr, "%d", Channel);
-    strcat(pPath, ChanNum[Channel][]);
+    strcat(pPath, ChanNum[Channel]);
     
     outputfile = fopen(pPath, "wb");
     for(i=0; i<eegDataSampleCount; i++)

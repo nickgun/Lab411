@@ -103,7 +103,7 @@ void detectGazeEye(char *pF8Path, char *pF7Path, int Sample){
 
 
 JNIEXPORT jint JNICALL
-Java_com_eegsdk_DetectEye_detectEye(JNIEnv *env, jobject thisObj, jstring javaString1, jstring javaString2, jint Sample){
+Java_com_detectevent_GazeEye_detectEye(JNIEnv *env, jobject thisObj, jstring javaString1, jstring javaString2, jint Sample){
    const char *nativeString1 = (*env)->GetStringUTFChars(env, javaString1, 0);
    const char *nativeString2 = (*env)->GetStringUTFChars(env, javaString2, 0);
    // use your string
