@@ -105,7 +105,7 @@ public class GazeEye extends Activity {
 		}
 	}
 
-	private static final String Ip = "192.168.1.59";
+	private static final String Ip = "127.0.0.1";
 	void readFileDetect(String str) {
 		String Line[] = new String[300];
 		int i = 0;

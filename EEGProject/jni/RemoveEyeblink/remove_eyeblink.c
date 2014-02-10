@@ -55,6 +55,8 @@ void main(){
   int Cols = 19;
   int Comp = 19;
   
+  
+
   //chi xu ly tung doan 256 mau
   
   double** RowData;
@@ -71,6 +73,20 @@ void main(){
   
   
   RowData = mat_create(Rows, Cols);
+
+  /**
+   *
+   * B0: Detect thoi dien liec mat
+   * phan nay tam thoi chua cho vao
+   *
+   */
+  for(int i=0; i<Sample; i++){
+     //Kenh F8: dich di tung doan 50 mau
+     //tinh gia tri trung binh(GTTB) cua 50 mau
+     //tinh sai khac GTTB so voi 50 mau truoc day
+     //neu vuot nguong thi tinh gia tri nay tren kenh F7
+     //xac dinh duoc thoi diem eyeblink
+  }
   
   /**
    * B1: Tinh toan ICA va Wavelet
